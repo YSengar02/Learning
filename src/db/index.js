@@ -7,9 +7,10 @@ export const sequelize = new Sequelize({
     password:config.password,   
     host:config.host,
     dialect: 'postgres',
-    dialectOptions:{
-        ssl:false
-    }}
+    // dialectOptions:{
+    //     ssl:false
+    // }
+}
   );
   sequelize.options.logging = false
   export const connectdb = async () => {
@@ -20,14 +21,6 @@ export const sequelize = new Sequelize({
           console.error('Unable to connect to the database:', error);
       }
   } 
-  export const syncdb = async () => {
-      try {
-         // await sequelize.sync({ alter: { drop: true } });
-          // console.log("database synced");
-         // await sequelize.sync({ alter: true }) 
-      } catch (error) {
-          console.log("im here", error);
-      }
-  } 
+
 
 
