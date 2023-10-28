@@ -10,11 +10,11 @@ const User  = sequelize.define('users',{
     name:{
         type: DataTypes.STRING,    
     },
-    email:{
+    email:{                                                                                                 
         type: DataTypes.STRING
     },
     contact_no:{
-        type: DataTypes.STRING
+        type: DataTypes.INTEGER
     },
     password:{
         type: DataTypes.STRING
