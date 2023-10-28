@@ -1,7 +1,7 @@
-import { Jwt } from "jsonwebtoken";
+import Jwt  from "jsonwebtoken";
 
 export const signJwtToken= async(data)=>{
-    const token = jwt.sign({
+    const token = Jwt.sign({
         data 
     },"12345",{expiresIn:'8hr'});
     return token
@@ -9,7 +9,7 @@ export const signJwtToken= async(data)=>{
 
 export const headerverify= async(req,resp,next)=>{
     try {
-        const decode= jwt.verify(req.headers.authorization,'secret')
+        const decode= Jwt.verify(req.headers.authorization,'secret')
         if(decode){
             next();
         }

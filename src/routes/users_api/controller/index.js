@@ -1,70 +1,98 @@
-import User from '../../../model/user/index.js'
-import bcrypt from 'bcrypt'
+import User from "../../../model/user/index.js";
+import bcrypt from "bcrypt"; 
+import jwt from "jsonwebtoken"
+import { signJwtToken } from "../middleware/index.js";
 
-class UserController{
-    async userSignup(req,resp){
-        try {
-            const {name,email,contact_no,status,password}=req.body
-            const data={name,email,contact_no,status,
-                password: await bcrypt.hash(password, 10),}
-            //const hashedPassword = await bcrypt.hash(password, 10)
-
-            const existingUser = await User.findOne({
-                where:{
-                    email
-                }
-            });
-            if (existingUser){
-                console.log("User is already exist!!!!!!!!!!!!!!!!!!");
-                resp.status(200).json({
-                    message:"User is already exist",
-                    status:200
-                })
-            }
-            else{
-                const  new_User = await User.create({data})
-                console.log("User created successfully.............");
-                resp.status(200).json({
-                    message:"User created successfully",
-                    status:200
-                })
-            }
-
-            
-            
-        } catch (error) {
-            console.error(error)
-            resp.status(200).json({
-                message:"Invalid User ",
-                status:200
-            })
-            
-        }
+class UserController {
+  async userSignup(req, resp) {
+    try {
+      await User.sync();
+      const { name, email, contact_no, status, password } = req.body;
+      const data = {
+        name,
+        email: email.toLowerCase(),
+        contact_no,
+        status,
+        password: await bcrypt.hash(password, 10),
+      };
+      console.log(">>>>>>>>>>>>>", data);
+      const existingUser = await User.findOne({
+        where: {
+          email,
+        },
+      });
+      if (existingUser) {
+        console.log("User already exist");
+        resp.status(200).json({
+          message: "User already exist",
+          status: 200,
+        });
+      } else {
+        const createUser = await User.create(data);
+        console.log("User created successfully.............", createUser);
+        resp.status(200).json({
+          message: "User created successfully",
+          status: 200,
+          data: createUser,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      resp.status(404).json({
+        message: "Invalid signup",
+      });
     }
+  }
 
-
-    async userUpdate(req,resp){
-        try {
-            
-        } catch (error) {
-            
-        }
+  async userLogin(req, resp) {
+    try {
+      const { email, password } = req.body;
+      const data = {
+        email,
+        password,
+      };
+      if(!data){
+        resp.status(200).send("User input is Invalid")
     }
-
-    async userDelete(req,resp){
-        try {
-            
-        } catch (error) {
-            
-        }
+      const CheckUser = await User.findOne({
+        where: {
+          email,
+        },
+      });
+      const match= await bcrypt.compare(password,CheckUser.password);
+      if (match) {
+        // const {name,email,contact_no,status}= CheckUser;
+        const generateToken= await signJwtToken({CheckUser})
+        // console.log(generateToken);
+        console.log("User Login successfully.............");
+        resp.status(200).json({
+          message: "User Login successfully.............",
+          status: 200,
+          token:generateToken
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      resp.status(200).json({
+        message: "Invalid User ",
+        status: 200,
+      });
     }
+  }
 
-    async Getall_user(req,resp){
+  async userUpdate(req, resp) {
+    try {
+    } catch (error) {}
+  }
 
-    }
+  async userDelete(req, resp) {
+    try {
+    } catch (error) {}
+  }
+
+  async Getall_user(req, resp) {}
 }
 export default new UserController();
-
 
 // try {
 //     const { email, password } = req.body;

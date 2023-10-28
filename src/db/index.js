@@ -1,15 +1,21 @@
 import { Sequelize } from "sequelize";
 import config from "../config/index.js";
+import fs from "fs";
+
 
 export const sequelize = new Sequelize({ 
     database:config.database,
     username:config.username,
     password:config.password,   
     host:config.host,
+    port: config.pgport,
     dialect: 'postgres',
-    // dialectOptions:{
-    //     ssl:false
-    // }
+    dialectOptions: {
+        ssl: {
+            rejectUnauthorized: false,
+            sslmode: 'require'
+        }
+    }
 }
   );
   sequelize.options.logging = false
@@ -21,6 +27,14 @@ export const sequelize = new Sequelize({
           console.error('Unable to connect to the database:', error);
       }
   } 
+  export const syncdb = async () => {
+    try {
+       await sequelize.sync();
+        console.log("database synced");
+    } catch (error) {
+        console.log("im here", error);
+    }
+}  
 
 
 
